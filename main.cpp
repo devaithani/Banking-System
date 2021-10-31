@@ -1,9 +1,11 @@
-# include<bits/stdc++.h>
+# include<bits/stdc++.h>          // header file
 using namespace std;
 
+// using time_t to access present date month and year
     time_t t = time(NULL);
 	tm* timePtr = localtime(&t);
 
+// creating an Authentication class to store the id pass and authenticate() method
 class Authentication
 {
     private:
@@ -11,47 +13,51 @@ class Authentication
         string password_ = "Karwaan";
     
     public:
-        bool authenticate(string id, string password)
+        bool authenticate(string id, string password)        // check id id password entered is wrong or correct
         {
             if(id == id_ && password == password_)
-                return 1;
+                return 1;                                    // return 1 if correct 
             else 
                 return 0;
         }
 };
 
+// creating below class to store the customer specific information
 class CustomerRecords
 {
     private:
-        string depositorName_;
-        string accountNumber_;
-        string accountType_;
-        float balance_;
+        string depositorName_;       // Name of the Customer
+        string accountNumber_;       // Account Number of the Customer
+        string accountType_;         // Type of Account : Savings/Current
+        float balance_;              // Balance in the account
         
     public:
-    
+        // default constructor
         CustomerRecords(){}
         
+	// parameterized constructor also to add a new customer
         CustomerRecords(string depositorName, string accountNumber, string accountType, float balance)
         {
             this->depositorName_ = depositorName;
             this->accountNumber_ = accountNumber;
             this->accountType_ = accountType;
-            this->balance_ = balance;
-            
-            writeToFile();
+            this->balance_ = balance;     
+	    // write the information to the file
+            writeToFile();                    
         }
         
+	// function to write the information to the file
         void writeToFile()
         {
-            fstream fileOut;
-            fileOut.open("Records.txt", ios::out | ios::app);
-            fileOut<<accountNumber_<<",";
+            fstream fileOut;                                       // file handler
+            fileOut.open("Records.txt", ios::out | ios::app);      // opening the Records.txt file 
+            fileOut<<accountNumber_<<",";                          
             fileOut<<depositorName_<<",";
             fileOut<<accountType_<<",";
             fileOut<<balance_<<"\n";
         }
         
+	// setters
         void setName(string depositorName)
         {
             depositorName_ = depositorName;
@@ -72,6 +78,7 @@ class CustomerRecords
             balance_ = balance;
         }
         
+	// getters
         string getName()
         {
             return depositorName_;
@@ -94,13 +101,14 @@ class CustomerRecords
         
 };
 
+// function to dread data form file
 void readFromFile(vector<CustomerRecords>& records)
 {
     fstream fileInput;
     fileInput.open("Records.txt", ios::in);
     string line, word;
     
-    while (!fileInput.eof())
+    while (!fileInput.eof())               // Read each line until end of file is reached
     {
         CustomerRecords tempObject;
         fileInput>>line;
@@ -116,10 +124,12 @@ void readFromFile(vector<CustomerRecords>& records)
         //float tempBalance = stof(word);
         tempObject.setBalance(0.00);
         
+	// storing in a temporary object and pushing the object to teh vector so created 
         records.push_back(tempObject);
     }
 }
 
+// Function to display the extracted contents of the file 
 void displayFile(vector<CustomerRecords>& records)
 {
     cout<<"\n*********** LIST OF CUSTOMERS ***********\n";
@@ -133,6 +143,12 @@ void displayFile(vector<CustomerRecords>& records)
     }
 }
 
+// function to delete any Customer's record
+/*
+   Simple logic delete the previous file
+   re-create the file
+   insert the data except for the given account number
+*/
 void deleteRecord(vector<CustomerRecords>& records, string toBeDeletedAN)
 {
     remove("Records.txt");
@@ -145,6 +161,7 @@ void deleteRecord(vector<CustomerRecords>& records, string toBeDeletedAN)
     }
 }
 
+// function to generate the transaction id using random
 string  generateRandom(int len) {
     string s;
     static const char alphanum[] =
@@ -155,10 +172,10 @@ string  generateRandom(int len) {
     for (int i = 0; i < len; ++i) {
         s += alphanum[rand() % (sizeof(alphanum) - 1)];
     }
-
     return s;
 }
 
+// Transaction class to store the transaction details of the customer
 class Transaction
 {
     private:
@@ -172,8 +189,9 @@ class Transaction
         CustomerRecords customer_;
     
     public:
-        Transaction(){}
+        Transaction(){}    // Default constructor
         
+	// Credit function to perform the credit operation
         void credit()
         {
             cout<<"\nEnter Account Number : ";
@@ -183,11 +201,12 @@ class Transaction
             string fileName = "TR" + customer_.getAccountNo() + ".txt";
             cout<<"\nEnter amount to be credited : ";
             cin>>amount_;
-            balance_ += amount_;
+            balance_ += amount_;              // update the balance
             operation_ = "Credit";
-            writeToFile(fileName);
+            writeToFile(fileName);           // update the file
         }
         
+	// Debit function to perform the debit operation
         void debit()
         {
             cout<<"\nEnter Account Number : ";
@@ -197,11 +216,12 @@ class Transaction
             string fileName = "TR" + customer_.getAccountNo() + ".txt";
             cout<<"\nEnter amount (in the multiples of 100) to be debited : ";
             cin>>amount_;
-            balance_ -= amount_;
-            operation_ = "Debit";
-            writeToFile(fileName);
+            balance_ -= amount_;          // update the balance
+            operation_ = "Debit";   
+            writeToFile(fileName);        // update the file
         }
         
+	// function to open the transaction file of the customer and write into it
         void writeToFile(string fileName)
         {
             fstream fileOut;
@@ -216,6 +236,7 @@ class Transaction
             fileOut<<yearOfTransaction_<<"\n";
         }
         
+	// function to open the transaction file of the customer and read from it
         void readFromFile(string fileName)
         {
             fstream fileInput;
@@ -244,15 +265,11 @@ class Transaction
                 getline(s, word, ',');
                 yearOfTransaction_ = stoi(word);
                 
-                displayTransactions();
+                displayTransactions();             // display the information so extracted
             }
         }
         
-        string getTransactionID()
-        {
-            return transactionID_;
-        }
-        
+	// function to display the transaction details 
         void displayTransactions()
         {
             cout<<"\nTransaction ID : "<<transactionID_;
@@ -264,17 +281,18 @@ class Transaction
             cout<<"____________________________________________________________________\n";
         }
         
+	// function to check if any interest is generated by checking the last operation (if done one month before)
         float calculateInterest()
         {
-            int pd = timePtr->tm_mday;
-            int pm = timePtr->tm_mon;
-            int py = timePtr->tm_year;
+            int pd = timePtr->tm_mday;   // present day
+            int pm = timePtr->tm_mon;    // present month
+            int py = timePtr->tm_year;   // present year
             
-            int bd = dateOfTransaction_;
-            int bm = monthOfTransaction_;
-            int by = yearOfTransaction_;
+            int bd = dateOfTransaction_;   // transaction day
+            int bm = monthOfTransaction_;  // transaction month
+            int by = yearOfTransaction_;   // transaction year
             
-            int d, m, y;
+            int d, m, y;    // variables to store the difference between the days months and years of last transaction
             int md[] = { 31,28,31,30,31,30,31,31,30,31,30,31 };
             y = py - by;
             if (pm < bm)
@@ -296,7 +314,7 @@ class Transaction
                 d = pd - bd;
             }
             
-            if(m>0)
+            if(m>0 || y>0)
             {
                 return balance_*(3.5)*m*(12*y);
             }
@@ -305,6 +323,7 @@ class Transaction
         }
 };
 
+//
 void addToCustomerRecord()
 {
     string name, accountNumber, accountType;
