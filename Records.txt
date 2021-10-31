@@ -1,0 +1,5 @@
+87989789,Mayank,Savings,2990
+12345678,Aithani,Current,3300
+45678910,Sridevi,Savings,2500
+99119911,Ambani,Current,9998
+
