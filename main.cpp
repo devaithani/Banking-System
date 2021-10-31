@@ -323,7 +323,7 @@ class Transaction
         }
 };
 
-//
+// function to add a new Customer
 void addToCustomerRecord()
 {
     string name, accountNumber, accountType;
@@ -337,11 +337,14 @@ void addToCustomerRecord()
     CustomerRecords newCustomer(name, accountNumber, accountType, 0.00);
 }
 
+// driver code
 int main()
 {
+	// Welcome Message
     cout<<"\n:::::::::::::::WELCOME TO THE BANKING SYSTEM :::::::::::::::::::\n";
     cout<<"\n                       COSMOS BANK                              \n";
     
+	// Asking for credentials
     Authentication employee;
     string id, password;
     cout<<"\n\n\nEnter login id : ";
@@ -353,7 +356,7 @@ int main()
         cout<<"\n OOPS  !!!!   Invalid credentials \n:-( Terminating program!!!!!!! :-( ";
         return 0;
     }
-    START:
+    // option variable to store the choice
     int option;
     
     cout<<"\nChoose option number \n";
@@ -370,6 +373,7 @@ int main()
     cout<<"\n11. Display Customer Information using Account Number";
     cout<<"\n12. Check Interest if earned any\n\nOption : ";
     
+	// using switch case to perform specific operation
     cin>>option;
     switch(option)
     {
@@ -521,7 +525,5 @@ int main()
             cout<<"\nInvalid option";
         }
     }
-    
-    
     return 0;
 }
